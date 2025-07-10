@@ -1,0 +1,39 @@
+x-shared-env: &shared-env
+  POSTGRES_PASSWORD: supersecret
+  DB_USER: irods
+  DB_NAME: ICAT
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: supersecret
+      POSTGRES_DB: ICAT
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - irodsnet
+
+  irods:
+    hostname: irods-test.metadata.school
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    networks:
+      - irodsnet
+    ports:
+      - "1247:1247"
+      - "1248:1248"
+    volumes:
+      - local_resource:/var/lib/irods/local_resource
+    command: tail -f /dev/null
+
+volumes:
+  pgdata:
+  local_resource:
+
+networks:
+  irodsnet:
