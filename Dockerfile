@@ -49,6 +49,7 @@ RUN apt-get update && \
         flex \
         cmake \
         make \
+        iputils-ping \
         && rm -rf /var/lib/apt/lists/*
 
 # Install iRODS dependencies
