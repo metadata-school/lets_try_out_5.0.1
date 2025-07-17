@@ -50,6 +50,8 @@ RUN apt-get update && \
         cmake \
         make \
         iputils-ping \
+        vim \
+        less \
         && rm -rf /var/lib/apt/lists/*
 
 # Install iRODS dependencies
@@ -68,5 +70,9 @@ RUN useradd -m irods && \
 # Copy initialization scripts
 COPY database_init.sh /root/database_init.sh
 COPY unattended.json /root/unattended.json
+
+# copy patch for setup
+# https://github.com/irods/irods/issues/8577
+COPY 8577.diff /root/8577.diff
 
 WORKDIR /root
