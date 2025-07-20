@@ -74,5 +74,7 @@ COPY unattended.json /root/unattended.json
 # copy patch for setup
 # https://github.com/irods/irods/issues/8577
 COPY 8577.diff /root/8577.diff
+# and patch for ignoring Zombies (raaaar)
+COPY 8577#issuecomment-3086041315.diff /root/8577#issuecomment-3086041315.diff
 
 WORKDIR /root

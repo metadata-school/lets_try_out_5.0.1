@@ -20,6 +20,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    init: true
     depends_on:
       - postgres
     networks:
