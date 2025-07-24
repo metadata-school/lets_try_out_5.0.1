@@ -62,10 +62,15 @@ RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - 
         irods-server \
         irods-database-plugin-postgres
 
-# Set up a user for iRODS
-RUN useradd -m irods && \
+# Set up the iRODS user properly
+# Note: iRODS packages typically create the user, but we ensure it exists
+# and has the right permissions.
+# there is also an assumption that odbc is located in /var/lib/irods/odbc.ini
+RUN id irods || useradd -m -s /bin/bash -d /var/lib/irods irods && \
     usermod -aG sudo irods && \
-    echo "irods ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    echo "irods ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    mkdir -p /var/lib/irods && \
+    chown irods:irods /var/lib/irods
 
 # Copy initialization scripts
 COPY database_init.sh /root/database_init.sh
@@ -76,5 +81,9 @@ COPY unattended.json /root/unattended.json
 COPY 8577.diff /root/8577.diff
 # and patch for ignoring Zombies (raaaar)
 COPY 8577#issuecomment-3086041315.diff /root/8577#issuecomment-3086041315.diff
+
+# Apply patches
+RUN patch /var/lib/irods/scripts/setup_irods.py < /root/8577.diff
+RUN patch /var/lib/irods/scripts/irods/controller.py < /root/8577#issuecomment-3086041315.diff
 
 WORKDIR /root
